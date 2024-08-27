@@ -48,9 +48,9 @@ class PessoaDAO:
             if self.connection.is_connected():
                 self.connection.close()
 
-    def get_pessoas(self):
+    def get_pessoas(self, arg):
         try:
-            sql = "SELECT id, nome, cpf FROM pessoas"
+            sql = f"SELECT id, nome, cpf FROM pessoas{arg}"
             self.cursor.execute(sql)
             result = self.cursor.fetchall()
             self.cursor.close()

@@ -722,8 +722,9 @@ def visualisar():
         print()
         print()
         print("[1] Ver Todas Pessoas Cadastradas")
-        print("[2] Voltar")
-        print("[3] Sair")
+        print("[2] Filtrar Pessoas")
+        print("[3] Voltar")
+        print("[4] Sair")
         print()
         try:
             answer = int(input("Escolha uma opção: "))
@@ -736,11 +737,14 @@ def visualisar():
             print()
             continue
         if answer == 1:
-            if pessoas() == 4:
+            if pessoas("") == 4:
                 return 4
         elif answer == 2:
-            break
+            if tipo_pesquisa() == 4:
+                return 4
         elif answer == 3:
+            break
+        elif answer == 4:
             return 4
         else:
             os.system("cls")
@@ -751,7 +755,7 @@ def visualisar():
             answer = 1
             continue
 
-def pessoas():
+def pessoas(arg):
     id = ""
     while id == "":
         lista_numero_id = []
@@ -763,7 +767,7 @@ def pessoas():
         print("Digite \"Sair\" para sair da aplicação")
         print()
         info_pessoas_dao = PessoaDAO()
-        result = info_pessoas_dao.get_pessoas()
+        result = info_pessoas_dao.get_pessoas(arg)
         for item in result:
             id_pessoa = int(item[0])
             nome = str(item[1])
@@ -773,6 +777,10 @@ def pessoas():
             print(f"ID: {id_pessoa} | NOME: {nome} | CPF: {cpf}")
 
         print()
+        if len(lista_numero_id) == 0:
+            input("Nenhuma pessoa foi encontrada...")
+            os.system("cls")
+            break
         id = input("Digite o ID: ")
         try:
             num = int(id)
@@ -1426,5 +1434,80 @@ def adicionar_endereco(id_pessoa):
             print()
             answer = 1
             continue
+
+def tipo_pesquisa():
+    answer = 1
+    while 0 < answer < 5:
+        escolha = ""
+        print()
+        print("-------- Pessoas Cadastradas --------")
+        print()
+        print()
+        print("[1] Pesquisar por Nome")
+        print("[2] Pesquisar por CPF")
+        print("[3] Voltar")
+        print("[4] Sair")
+        print()
+        try:
+            answer = int(input("Escolha uma opção: "))
+            os.system("cls")
+        except ValueError as e:
+            os.system("cls")
+            print("-----------------------------")
+            print("| DIGITE UM CARACTER VÁLIDO |")
+            print("-----------------------------")
+            print()
+            continue
+        if answer == 1:
+            escolha = "nome"
+            nome = pesquisa(escolha)
+            if nome == "sair":
+                return 4
+        elif answer == 2:
+            escolha = "cpf"
+            cpf = pesquisa(escolha)
+            if cpf == "sair":
+                return 4
+            
+        elif answer == 3:
+            break
+        elif answer == 4:
+            return 4
+        else:
+            os.system("cls")
+            print("---------------------------")
+            print("| DIGITE UM NUMERO VÁLIDO |")
+            print("---------------------------")
+            print()
+            answer = 1
+            continue
+
+def pesquisa(escolha: str):
+    answer = ""
+    while answer == "":
+        if escolha == "nome":
+            look_escolha = escolha.title()
+            cpf = ""
+        else:
+            look_escolha = escolha.upper()
+            cpf = " (000.000.000-00)"
+        print()
+        print(f"-------- Pesquisar {look_escolha} --------")
+        print()
+        print()
+        print("Digite \"Voltar\" para voltar a página anterior")
+        print("Digite \"Sair\" para sair da aplicação")
+        print()
+        print()
+        answer = input(f"Digite o {look_escolha}{cpf}: ")
+        os.system("cls")
+        if answer.lower() == "voltar":
+            break
+        elif answer.lower() == "sair":
+            return "sair"
+        else:
+            if pessoas(f" WHERE {escolha} LIKE '%{answer}%'") == 4:
+                return "sair"
+            
 
 iniciar()
